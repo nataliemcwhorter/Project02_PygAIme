@@ -1,0 +1,9 @@
+{
+  "episodes": 12000,
+  "wins": 5821,
+  "losses": 5787,
+  "draws": 392,
+  "win_rate": 0.4850833333333333,
+  "total_episodes": 13000,
+  "final_epsilon": 0.00998645168764533
+}

@@ -1,7 +1,9 @@
 import os
 import json
-import pickle
+from collections import deque
 from datetime import datetime
+
+import keras
 
 """
 Model Manager class
@@ -30,7 +32,7 @@ class ModelManager:
         if not os.path.exists(self.models_dir):
             return []
         files = os.listdir(self.models_dir)
-        model_files = [f for f in files if f.endswith('.pkl')]
+        model_files = [f for f in files if f.endswith('.keras')]
         result = []
         for filename in model_files:
             metadata = self._load_metadata(filename)
@@ -40,35 +42,58 @@ class ModelManager:
     #saves a model
     def save_model(self, agent, model_name=None, metadata=None):
         self.ensure_directory_exists()
-        filename = self.generate_model_name(model_name)
-        if not filename.endswith('.pkl'):
-            filename += '.pkl'
-        filepath = os.path.join(self.models_dir, filename)
+        if model_name.endswith(".pkl"):
+            model_name = model_name[:-4]
+        filepath = os.path.join(self.models_dir, model_name)
+        # Save model weights
+        agent.save_model(filepath + '.keras')
+        # Save additional training metadata
+        if metadata is None:
+            metadata = {}
+            # Convert non-serializable objects
+        serializable_metadata = {}
+        for key, value in metadata.items():
+            if isinstance(value, deque):
+                # Convert deque to list
+                serializable_metadata[key] = list(value)
+            elif hasattr(value, 'tolist'):
+                # Handle numpy arrays
+                serializable_metadata[key] = value.tolist()
+            else:
+                serializable_metadata[key] = value
+
+        # Save metadata
         try:
-            with open(filepath, 'wb') as f:
-                pickle.dump(agent, f)
-            if metadata:
-                self._save_metadata(filename, metadata)
-            return filepath
+            with open(filepath + '_metadata.json', 'w') as f:
+                json.dump(serializable_metadata, f)
         except Exception as e:
-            print(f"Error saving model: {e}")
-            return None
+            print(f"Error saving metadata: {e}")
 
     # loads the model
     def load_model(self, model_name):
-        if not model_name.endswith('.pkl'):
-            model_name += '.pkl'
+        if model_name.endswith(".pkl"):
+            model_name = model_name[:-4]
+        if not model_name.endswith(".keras"):
+            model_name = model_name + ".keras"
         filepath = os.path.join(self.models_dir, model_name)
+        # Load model weights
+        model = keras.models.load_model(filepath)
+        # Load metadata
         try:
-            with open(filepath, 'rb') as f:
-                agent = pickle.load(f)
-            return agent
+            with open(filepath + '_metadata.json', 'r') as f:
+                metadata = json.load(f)
+            # Restore training state
+            self.total_episodes = metadata.get('episodes', 0)
+            self.epsilon = metadata.get('epsilon', 1.0)
+
+            # Restore memory if applicable
+            if 'memory' in metadata:
+                self.memory = deque(metadata['memory'], maxlen=2000)
         except FileNotFoundError:
-            print(f"Model {model_name} not found")
-            return None
+            print("No metadata found, starting from scratch")
         except Exception as e:
-            print(f"Error loading model: {e}")
-            return None
+            print(f"Error loading metadata: {e}")
+        return model
 
     #deletes unwanted models
     def delete_model(self, model_name):
@@ -84,18 +109,18 @@ class ModelManager:
 
     #gets the information from the model to be used
     def get_model_info(self, model_name):
-        return self._load_metadata(model_name + '.pkl')
+        return self._load_metadata(model_name+ '.keras')
 
     # saves the data about the model
     def _save_metadata(self, model_name, metadata):
-        metadata_filename = model_name.replace('.pkl', '.json')
+        metadata_filename = model_name.replace('.keras', '_metadata.json')
         metadata_path = os.path.join(self.models_dir, metadata_filename)
         with open(metadata_path, 'w') as f:
             json.dump(metadata, f, indent=2)  # indent=2 makes it readable
 
     # loads the models data
     def _load_metadata(self, model_name):
-        metadata_filename = model_name.replace('.pkl', '.json')
+        metadata_filename = model_name.replace('.keras', '_metadata.json')
         metadata_path = os.path.join(self.models_dir, metadata_filename)
         # Try to load the JSON file
         try:

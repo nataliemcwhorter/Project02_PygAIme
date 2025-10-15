@@ -1,29 +1,37 @@
 import random
 import numpy as np
 from game.board import Connect4Board
+from main import GameManager
+from utils.file_manager import ModelManager
+
 
 class TrainingManager:
     def __init__(self, agent, board):
         self.agent = agent
+        self.model_manager = ModelManager()
+        self.game_manager = GameManager()
+        self.model_index = self.game_manager.selected_model_index
+        saved_models = self.model_manager.list_saved_models()
         self.board = board
         self.training_stats = {
             'episodes': 0,
             'wins': 0,
             'losses': 0,
             'draws': 0,
-            'win_rate': 0.0
+            'win_rate': 0.0,
+            'total_episodes': self.model_manager._load_metadata(saved_models[self.model_index][0])['episodes']
         }
 
-    def train(self, mode='vs human', **kwargs):
+    def train(self, mode='self_play', **kwargs):
         valid_modes = ['self_play', 'vs_random', 'vs_human']
         if mode not in valid_modes:
             raise ValueError(f"Invalid mode. Choose from {valid_modes}")
         try:
             if mode == 'self_play':
-                episodes = kwargs.get('episodes', 1000)
+                episodes = kwargs.get('episodes', 12000)
                 return self._train_self_play(episodes)
             elif mode == 'vs_random':
-                episodes = kwargs.get('episodes', 1000)
+                episodes = kwargs.get('episodes', 12000)
                 return self._train_against_random(episodes)
             elif mode == 'vs_human':
                 human_move_callback = kwargs.get('human_move_callback')
@@ -42,7 +50,7 @@ class TrainingManager:
             valid_moves = self.board.get_valid_moves()
             if not valid_moves:
                 return 0
-            action = self.agent.act(state)
+            action = self.agent.act(state, valid_moves)
             prev_state = state
             row = self.board.make_move(action, current_player)
             new_state = self.board.get_board_state()
@@ -67,6 +75,7 @@ class TrainingManager:
             elif result == 0:
                 self.training_stats['draws'] += 1
             self.training_stats['episodes'] += 1
+            self.training_stats['total_episodes'] += 1
             self.training_stats['win_rate'] = self.training_stats['wins'] / self.training_stats['episodes']
             self.agent.replay()
             if episode % 10 == 0:
@@ -109,6 +118,7 @@ class TrainingManager:
                     self.agent.remember(prev_state, action, -1, new_state, False)
                 current_player = 3-current_player
             self.training_stats['episodes'] += 1
+            self.training_stats['total_episodes'] += 1
             self.training_stats['win_rate'] = self.training_stats['wins'] / self.training_stats['episodes']
             self.agent.replay()
             if episode % 10 == 0:
@@ -150,6 +160,7 @@ class TrainingManager:
                 self.agent.remember(prev_state, action, -1, new_state, False)
             current_player = 3-current_player
         self.training_stats['episodes'] += 1
+        self.training_stats['total_episodes'] += 1
         self.training_stats['win_rate'] = self.training_stats['wins'] / self.training_stats['episodes']
         self.agent.replay()
         self.training_stats['final_epsilon'] = self.agent.epsilon
@@ -190,6 +201,7 @@ class TrainingManager:
                     self.agent.remember(prev_state, action, -1, new_state, False)
                 current_player = 3 - current_player
             self.training_stats['episodes'] += 1
+            self.training_stats['total_episodes'] += 1
             self.training_stats['win_rate'] = self.training_stats['wins'] / self.training_stats['episodes']
             if episode % 100 == 0 or episode % 100 == 1:
                 self.get_training_progress()
