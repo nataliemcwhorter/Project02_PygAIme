@@ -1,5 +1,6 @@
 import numpy as np
 import random
+import os
 import tensorflow as tf
 from tensorflow import keras
 from collections import deque
@@ -16,6 +17,8 @@ class QAgent:
         self.memory = deque(maxlen=2000)
         self.q_network = self._build_model()
         self.target_network = self._build_model()
+        self.total_episodes = 0
+        self.models_dir = "models/saved_models"
 
     def _build_model(self):
         model = keras.Sequential()
@@ -62,10 +65,24 @@ class QAgent:
         self.target_network.set_weights(self.q_network.get_weights())
 
     def save_model(self, filepath):
-        self.q_network.save(filepath)
+        if not filepath.endswith('.keras'):
+            filepath += '.keras'
+        self.q_network.save(filepath, save_format='keras')
+        metadata = {
+            'episodes': getattr(self, 'total_episodes', 0),
+            'epsilon': getattr(self, 'epsilon', 1.0),
+            'memory': list(self.memory) if hasattr(self, 'memory') else [],
+            # Add other relevant training state information
+        }
+        return metadata
 
     def load_model(self, filepath):
-        self.q_network = keras.models.load_model(filepath)
+        if filepath.endswith('.pkl'):
+            filepath = filepath[:-4]
+        if not filepath.endswith('.keras'):
+            filepath = filepath + '.keras'
+        filep = os.path.join(self.models_dir, filepath)
+        self.q_network = keras.models.load_model(filep)
         self.target_network.set_weights(self.q_network.get_weights())
 
     def get_training_stats(self):
