@@ -35,7 +35,7 @@ class ModelManager:
         model_files = [f for f in files if f.endswith('.keras')]
         result = []
         for filename in model_files:
-            metadata = self._load_metadata(filename)
+            metadata = self.load_metadata(filename)
             result.append((filename, metadata))
         return result
 
@@ -109,17 +109,17 @@ class ModelManager:
 
     #gets the information from the model to be used
     def get_model_info(self, model_name):
-        return self._load_metadata(model_name+ '.keras')
+        return self.load_metadata(model_name + '.keras')
 
     # saves the data about the model
-    def _save_metadata(self, model_name, metadata):
+    def save_metadata(self, model_name, metadata):
         metadata_filename = model_name.replace('.keras', '_metadata.json')
         metadata_path = os.path.join(self.models_dir, metadata_filename)
         with open(metadata_path, 'w') as f:
             json.dump(metadata, f, indent=2)  # indent=2 makes it readable
 
     # loads the models data
-    def _load_metadata(self, model_name):
+    def load_metadata(self, model_name):
         metadata_filename = model_name.replace('.keras', '_metadata.json')
         metadata_path = os.path.join(self.models_dir, metadata_filename)
         # Try to load the JSON file
