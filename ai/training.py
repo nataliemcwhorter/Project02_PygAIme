@@ -3,7 +3,10 @@ import numpy as np
 from game.board import Connect4Board
 from utils.file_manager import ModelManager
 
-
+"""
+this is the TrainingManager class
+it manages the model training as well as handling the different types of training
+"""
 class TrainingManager:
     def __init__(self, agent, board):
         self.model_name = None
@@ -19,10 +22,19 @@ class TrainingManager:
         self.model_manager = ModelManager()
         self.board = board
 
+    """
+    initialize(self, model_name) initializes the model
+    """
     def initialize(self, model_name):
         self.model_name = model_name
         self.training_stats['total_episodes'] = self.model_manager.load_metadata(self.model_name)
 
+    """
+    train(self, mode, **kwargs) finds what type of training it is and sends it to that specific
+    training category
+    mode is the type of training happening
+    **kwargs is a generic dictionary parameter for the trainer
+    """
     def train(self, mode='self_play', **kwargs):
         valid_modes = ['self_play', 'vs_random', 'vs_human']
         if mode not in valid_modes:
@@ -43,8 +55,12 @@ class TrainingManager:
             print(f"Training Error: {e}")
             raise
 
+    """
+    _self_play_episode() has the ai play an episode againts itself.
+    """
     def _self_play_episode(self):
         self.board.reset()
+        reward = 0
         current_player = random.randint(1, 2)
         while True:
             state = self.board.get_board_state()
@@ -57,14 +73,19 @@ class TrainingManager:
             new_state = self.board.get_board_state()
             if self.board.check_winner(current_player, row, action):
                 if current_player == 1:
-                    reward = 100
+                    reward += 100
                 else:
-                    reward = -100
+                    reward += -100
                 self.agent.remember(prev_state, action, reward, new_state, True)
+                reward = 0
                 return current_player
             self.agent.remember(prev_state, action, -1, new_state, False)
             current_player = 3-current_player
 
+    """
+    _train_self_play(self, episodes) is the overarching code for the self train mode
+    it sends to _self_play_episode() for each individual episode
+    """
     def _train_self_play(self, episodes):
         self.reset_stats()
         for episode in range(episodes):
@@ -87,7 +108,12 @@ class TrainingManager:
         self.training_stats['final_epsilon'] = self.agent.epsilon
         return self.training_stats
 
+    """
+    _train_against_random(self, episodes) is the overarching code for the random train mode
+    it has the agent play against a random move
+    """
     def _train_against_random(self, episodes):
+        reward = 0
         self.reset_stats()
         for episode in range(episodes):
             self.board.reset()
@@ -101,6 +127,7 @@ class TrainingManager:
                 if current_player == 1:
                     action = self.agent.act(state, valid_moves)
                     prev_state = state
+                    reward += 10
                 else:
                     action = random.choice(valid_moves)
                     prev_state = state
@@ -109,14 +136,15 @@ class TrainingManager:
                 if self.board.check_winner(current_player, row, action):
                     if current_player == 1:
                         self.training_stats['wins'] += 1
-                        reward = 100
+                        reward += 100
                     else:
                         self.training_stats['losses'] += 1
-                        reward = -100
+                        reward += -100
                     self.agent.remember(prev_state, action, reward, new_state, True)
+                    reward = 0
                     break
                 if current_player == 1:
-                    self.agent.remember(prev_state, action, -1, new_state, False)
+                    self.agent.remember(prev_state, action, 0, new_state, False)
                 current_player = 3-current_player
             self.training_stats['episodes'] += 1
             self.training_stats['total_episodes'] += 1
@@ -130,7 +158,12 @@ class TrainingManager:
         self.training_stats['final_epsilon'] = self.agent.epsilon
         return self.training_stats
 
+    """
+    _train_against_human(self, human_move_callback) is the overarching code for the human train mode
+    it has the agent play against the human player's moves
+    """
     def _train_against_human(self, human_move_callback):
+        reward = 0
         self.reset_stats()
         current_player = random.randint(1, 2)
         self.board.reset()
@@ -142,6 +175,7 @@ class TrainingManager:
                 break
             if current_player == 1:
                 action = self.agent.act(state, valid_moves)
+                reward += 10
                 prev_state = state
             else:
                 action = human_move_callback(valid_moves)
@@ -151,14 +185,14 @@ class TrainingManager:
             if self.board.check_winner(current_player, row, action):
                 if current_player == 1:
                     self.training_stats['wins'] += 1
-                    reward = 100
+                    reward += 100
                 else:
                     self.training_stats['losses'] += 1
-                    reward = -100
+                    reward += -100
                 self.agent.remember(prev_state, action, reward, new_state, True)
                 break
             if current_player == 1:
-                self.agent.remember(prev_state, action, -1, new_state, False)
+                self.agent.remember(prev_state, action, 0, new_state, False)
             current_player = 3-current_player
         self.training_stats['episodes'] += 1
         self.training_stats['total_episodes'] += 1
@@ -168,8 +202,12 @@ class TrainingManager:
         self.get_training_progress()
         return self.training_stats
 
+    """
+    evaluate_agent(self, num_games) evaluates the performance of the trained model
+    """
     def evaluate_agent(self, num_games=100):
         self.reset_stats()
+        reward = 0
         original_epsilon = self.agent.epsilon
         self.agent.epsilon = 0
         for episode in range(num_games):
@@ -183,6 +221,7 @@ class TrainingManager:
                     break
                 if current_player == 1:
                     action = self.agent.act(state, valid_moves)
+                    reward += 10
                     prev_state = state
                 else:
                     action = random.choice(valid_moves)
@@ -192,14 +231,14 @@ class TrainingManager:
                 if self.board.check_winner(current_player, row, action):
                     if current_player == 1:
                         self.training_stats['wins'] += 1
-                        reward = 100
+                        reward += 100
                     else:
                         self.training_stats['losses'] += 1
-                        reward = -100
+                        reward += -100
                     self.agent.remember(prev_state, action, reward, new_state, True)
                     break
                 if current_player == 1:
-                    self.agent.remember(prev_state, action, -1, new_state, False)
+                    self.agent.remember(prev_state, action, 0, new_state, False)
                 current_player = 3 - current_player
             self.training_stats['episodes'] += 1
             self.training_stats['total_episodes'] += 1
@@ -211,6 +250,9 @@ class TrainingManager:
         self.training_stats['final_epsilon'] = self.agent.epsilon
         return self.training_stats
 
+    """
+    get_training_progress() gets the training progress of the model while training
+    """
     def get_training_progress(self):
         print(f"Episode: {self.training_stats['episodes']}")
         print(f"Win Rate: {self.training_stats['win_rate']:.2f}")
@@ -221,6 +263,10 @@ class TrainingManager:
         print(f"Current Epsilon: {self.agent.epsilon}")
         print("-------------------------------")
 
+    """
+    reset_stats() resets the training statistics
+    so that they will reset for each new training session.
+    """
     def reset_stats(self):
         self.training_stats['episodes'] = 0
         self.training_stats['wins'] = 0

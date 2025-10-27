@@ -11,23 +11,30 @@ manages the different saved models
 contains functions that help load, save, and use models
 """
 class ModelManager:
-    #initialize the model
     def __init__(self, models_dir="models/saved_models"):
         self.models_dir = models_dir
         self.ensure_directory_exists()
 
-    #make sure that the pathway exists
+    """
+    ensure_directory_exists() makes sure that the pathway exists
+    """
     def ensure_directory_exists(self):
         os.makedirs(self.models_dir, exist_ok=True)
 
-    #checks if the user has chosen a name, otherwise creates one with datetime format
+    """
+    generate_model_name(self, custom_name) checks if the user has chosen a name
+    otherwise creates one with datetime format
+    custom_name is the name the user decided to use
+    """
     def generate_model_name(self, custom_name=None):
         if custom_name is not None:
             return custom_name
         else:
             return f"connect4_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}"
 
-    # gives the user a list of presaved models to choose from when loading models
+    """
+    list_saved_models() gives the user a list of presaved models to choose from when loading models
+    """
     def list_saved_models(self):
         if not os.path.exists(self.models_dir):
             return []
@@ -39,7 +46,12 @@ class ModelManager:
             result.append((filename, metadata))
         return result
 
-    #saves a model
+    """
+    save_model(self, agent, model_name, metadata) saves the model
+    agent is the model that is being saved
+    model_name is the name of the model
+    metadata is the actual data of the model
+    """
     def save_model(self, agent, model_name=None, metadata=None):
         self.ensure_directory_exists()
         if model_name.endswith(".pkl"):
@@ -61,7 +73,6 @@ class ModelManager:
                 serializable_metadata[key] = value.tolist()
             else:
                 serializable_metadata[key] = value
-
         # Save metadata
         try:
             with open(filepath + '_metadata.json', 'w') as f:
@@ -69,7 +80,10 @@ class ModelManager:
         except Exception as e:
             print(f"Error saving metadata: {e}")
 
-    # loads the model
+    """
+    load_model(self, model_name) loads the specified model
+    model_name is the name of the model that is going to be loaded
+    """
     def load_model(self, model_name):
         if model_name.endswith(".pkl"):
             model_name = model_name[:-4]
@@ -95,7 +109,10 @@ class ModelManager:
             print(f"Error loading metadata: {e}")
         return model
 
-    #deletes unwanted models
+    """
+    delete_model(self, model_name) deletes the specified model
+    model_name is the name of the model that is going to be deleted
+    """
     def delete_model(self, model_name):
         try:
             os.remove(os.path.join(self.models_dir, model_name + '.pkl'))
@@ -107,18 +124,28 @@ class ModelManager:
             print(f"Error deleting model: {e}")
             return False
 
-    #gets the information from the model to be used
+    """
+    get_model_info(self, model_name) returns the model information
+    model_name is the name of the model
+    """
     def get_model_info(self, model_name):
         return self.load_metadata(model_name + '.keras')
 
-    # saves the data about the model
+    """
+    save_metadata(self, model_name, metadata) saves the metadata of the model
+    model_name is the name of the model
+    metadata is the actual data of the model
+    """
     def save_metadata(self, model_name, metadata):
         metadata_filename = model_name.replace('.keras', '_metadata.json')
         metadata_path = os.path.join(self.models_dir, metadata_filename)
         with open(metadata_path, 'w') as f:
             json.dump(metadata, f, indent=2)  # indent=2 makes it readable
 
-    # loads the models data
+    """
+    load_metadata(self, model_name) loads the metadata of the model
+    model_name is the name of the model
+    """
     def load_metadata(self, model_name):
         metadata_filename = model_name.replace('.keras', '_metadata.json')
         metadata_path = os.path.join(self.models_dir, metadata_filename)

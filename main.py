@@ -7,8 +7,15 @@ from ai.q_agent import QAgent
 from game.display import Connect4Display
 from utils.file_manager import ModelManager
 
-
+"""
+Connect4Game is a reinforcement learning project that allows you to play connect4 againt an ai
+__author__ = "27mcwhorter"
+__version__ = "10.27.2025"
+"""
 class GameManager:
+    """
+    initializes the game manager (main class)
+    """
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((800, 600))
@@ -28,6 +35,10 @@ class GameManager:
         self.selected_model_index = 0
         self.x=0
 
+    """
+    run() runs the game loop
+    calls methods from other classes to perform
+    """
     def run(self):
         running = True
         while running:
@@ -56,6 +67,10 @@ class GameManager:
         pygame.quit()
         sys.exit()
 
+    """
+    handle_menu_events(self, event) handles user selection from menu options
+    event is feedback from the keyboard event item
+    """
     def handle_menu_events(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
@@ -77,6 +92,10 @@ class GameManager:
                     pygame.quit()
                     sys.exit()
 
+    """
+    handle_training_events(self, event) handles user selection from training mode
+    event is feedback from the keyboard event item
+    """
     def handle_training_events(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
@@ -84,6 +103,10 @@ class GameManager:
             elif event.key == pygame.K_s:
                 self.save_training_model()
 
+    """
+    save_training_model(self, model) saves the model
+    model is the specified model that is to be saved
+    """
     def save_training_model(self):
         self.display.draw_save_prompt()
         pygame.display.flip()
@@ -92,7 +115,7 @@ class GameManager:
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_y:
-                        model_name = self.model_manager.generate_model_name("test_model")
+                        model_name = self.model_manager.generate_model_name("weird_model")
                         metadata = {'episode': self.trainer.training_stats['total_episodes'],
                                 'win_rate': self.trainer.get_training_progress()['win_rate']}
                         self.model_manager.save_model(
@@ -109,6 +132,9 @@ class GameManager:
                     elif event.key == pygame.K_n:
                         waiting_for_save = False
 
+    """
+    training_mode(self) handles the different training options
+    """
     def training_mode(self):
         if self.load_existing:
             saved_models = self.model_manager.list_saved_models()
@@ -153,10 +179,10 @@ class GameManager:
                         mode_selection = (mode_selection + 1) % len(training_modes)
                     elif event.key == pygame.K_RETURN:
                         if mode_selection == 0:
-                            training_stats = self._train_with_display(mode='self_play', episodes=10)
+                            training_stats = self._train_with_display(mode='self_play', episodes=100)
                             selecting_mode = False
                         elif mode_selection == 1:
-                            training_stats = self._train_with_display(mode='vs_random', episodes=10)
+                            training_stats = self._train_with_display(mode='vs_random', episodes=100)
                             selecting_mode = False
                         elif mode_selection == 2:
                             training_stats = self._train_with_human_display()
@@ -177,7 +203,7 @@ class GameManager:
                 text = font.render(mode, True, color)
                 self.screen.blit(text, (250, 150 + i * 50))
             pygame.display.flip()
-        model_name = self.model_manager.generate_model_name("test_model")
+        model_name = self.model_manager.generate_model_name("weird_model")
         self.model_manager.save_model(
             self.agent,
             model_name,
@@ -190,6 +216,11 @@ class GameManager:
         self.model_manager.save_metadata(model_name, training_stats)
         self.state = 'MENU'
 
+    """
+    _train_with_display(self, mode, episodes) creates the display for while training
+    mode is the type of training mode
+    episodes is the number of training episodes
+    """
     def _train_with_display(self, mode, episodes):
         font = pygame.font.Font(None, 36)
         training_stats = self.trainer.train(mode=mode, episodes=episodes)
@@ -209,7 +240,13 @@ class GameManager:
                         waiting = False
         return training_stats
 
+    """
+    _train_with_human_display(self) creates the display for while training with human
+    """
     def _train_with_human_display(self):
+        """
+        human_move_callback(valid_moves) finds the move that the human does
+        """
         def human_move_callback(valid_moves):
             while True:
                 for event in pygame.event.get():
@@ -316,21 +353,11 @@ class GameManager:
                             training_active = False
                             waiting= False
                             break
-
-        # Save the improved model
-        print('hi')
-        '''model_name = self.model_manager.generate_model_name("new_model")
-        self.model_manager.save_model(
-            self.agent,
-            model_name,
-            {
-                'episodes': training_stats['episodes'],
-                'win_rate': training_stats['win_rate'],
-                'training_mode': 'human'
-            }
-        )'''
         return training_stats
 
+    """
+    play_mode(self) creates the display for when playing against the model
+    """
     def play_mode(self):
         if self.x ==0:
             # FIRST: Select which model to play against
@@ -353,7 +380,6 @@ class GameManager:
                             self.state = 'MENU'
                             return
                 return
-
             # Show model selection menu (similar to your training_mode logic)
             selecting = True
             selected_model_index = 0
@@ -372,21 +398,17 @@ class GameManager:
                         elif event.key == pygame.K_ESCAPE:
                             self.state = 'MENU'
                             return
-
                 # Draw model selection screen
                 self.screen.fill((0, 0, 0))
                 font = pygame.font.Font(None, 36)
                 title = font.render('Select AI Opponent', True, (255, 255, 255))
                 self.screen.blit(title, (250, 50))
-
                 for i, model in enumerate(saved_models):
                     color = (255, 255, 0) if i == selected_model_index else (255, 255, 255)
                     text = font.render(f"Model {i}: {model[0]}", True, color)
                     self.screen.blit(text, (250, 150 + i * 50))
-
                 pygame.display.flip()
                 self.x = self.x + 1
-
 
         self.board.reset()
         self.current_player = random.choice([1,2])  # Human starts
@@ -478,6 +500,9 @@ class GameManager:
                         self.x = 0
                         waiting = False
 
+    """
+    model_management_menu(self) creates the menu for managing different models
+    """
     def model_management_menu(self):
         models = self.model_manager.list_saved_models()
         selected_model = 0

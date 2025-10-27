@@ -13,13 +13,18 @@ class Connect4Board:
         self.board = np.zeros((rows, cols), dtype=int)
         # 0 = empty, 1 = player 1, 2 = player 2
 
-    # resets board to original state
+    """
+    reset() resets board to original state
+    """
     def reset(self):
         for r in range(self.rows):
             for c in range(self.cols):
                 self.board[r][c] = 0
 
-    #checks if move is valid
+    """
+    is_valid_move(self, col) checks if move is valid by seeing if col is full or not
+    col is the column that the piece is wanted to be placed in
+    """
     def is_valid_move(self, col):
         if col < 0 or col >= self.cols:
             return False
@@ -27,7 +32,11 @@ class Connect4Board:
             return True
         return False
 
-    #makes a move, returns row where new piece is
+    """
+    make_move(self, col, player) makes a move, returns row where new piece is
+    col is column of new move
+    player is who is making the move
+    """
     def make_move(self, col, player):
         for row in range(self.rows - 1, -1, -1):
             if self.board[row][col] == 0:
@@ -35,7 +44,13 @@ class Connect4Board:
                 return row
         return -1
 
-    # checks if the last piece put down won the game
+    """
+    check_winner(self, player, last_row, last_col) checks if the last piece put down won the game
+    player is the player who put down the move (to know which pieces to look at)
+    last_row and last_col are the last row and last column
+    they are used to see if the last piece played won the game so that the computer has less
+    places to check
+    """
     def check_winner(self, player, last_row, last_col):
         directions = [(0, 1), (1, 0), (1, 1), (1, -1)]
         for dr, dc in directions:
@@ -58,7 +73,9 @@ class Connect4Board:
                 return True
         return False
 
-    # returns list of valid column numbers
+    """
+    get_valid_moves() returns list of valid column numbers
+    """
     def get_valid_moves(self):
         valid_moves = []
         for col in range(self.cols):
@@ -66,17 +83,23 @@ class Connect4Board:
                 valid_moves.append(col)
         return valid_moves
 
-    # checks if board is full
+    """
+    is_full() checks if board is full
+    """
     def is_full(self):
         if self.get_valid_moves() == []:
             return True
         return False
 
-    # gets current state of the board for the ai
+    """
+    get_board_state() gets current state of the board for the ai
+    """
     def get_board_state(self):
         return self.board.flatten()
 
-    # copies the board so we dont mess it up when checking
+    """
+    copy() copies the board so we dont mess it up when checking
+    """
     def copy(self):
         new = copy.deepcopy(self)
         return new

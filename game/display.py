@@ -1,7 +1,11 @@
 import pygame
 import numpy as np
 
-
+"""
+This is the Connect4Display class
+it creates the GUI and the visible elements of this ai
+it uses pygame to create it.
+"""
 class Connect4Display:
     def __init__(self, screen, rows=6, cols=7):
         self.screen = screen
@@ -16,6 +20,10 @@ class Connect4Display:
         self.width = cols * self.SQUARESIZE
         self.height = (rows + 1) * self.SQUARESIZE
 
+    """
+    draw_board(self, board) creates the game board that will be displayed on the screen
+    board is the board (where the pieces are and who they belong to)
+    """
     def draw_board(self, board):
         pygame.draw.rect(self.screen, self.BLUE, pygame.Rect(0, self.SQUARESIZE, self.width, self.height-self.SQUARESIZE))
         for row in range(self.rows):
@@ -32,6 +40,11 @@ class Connect4Display:
                     color = self.YELLOW
                 pygame.draw.circle(self.screen, color, (center_x, center_y), self.SQUARESIZE // 2 - 5)
 
+    """
+    draw_piece_preview(self, col, player) draws the piece hovering over the column your mouse is on
+    col is the column number
+    player is the player so that we know what color to make the piece
+    """
     def draw_piece_preview(self, col, player):
         center_x = (col * self.SQUARESIZE) + self.SQUARESIZE//2
         center_y = self.SQUARESIZE//2
@@ -41,12 +54,21 @@ class Connect4Display:
             color = self.YELLOW
         pygame.draw.circle(self.screen, color, (center_x, center_y), self.SQUARESIZE // 2 - 5)
 
+    """
+    get_column_from_mouse(self, mouse_x) finds which column the user is hovering over
+    mouse_x is the x position of the mouse
+    """
     def get_column_from_mouse(self, mouse_x):
         column = mouse_x // self.SQUARESIZE
         if column < 0 or column >= self.cols:
             column = -1
         return column
 
+    """
+    draw_game_over_screen(self, winner) draws the screen for when the game is over
+    winner is whoever won the game
+    displays a different screen based on if the player or the computer won
+    """
     def draw_game_over_screen(self, winner):
         overlay = pygame.Surface((800, 600))
         overlay.set_alpha(128)
@@ -70,6 +92,12 @@ class Connect4Display:
         restart_rect = restart_text.get_rect(center=(400,400))
         self.screen.blit(restart_text, restart_rect)
 
+    """
+    draw_menu(self, menu_items, selected_index) draws the main menu for the user then to choose
+    from the options displayed
+    menu_items is a list of the different options that will be choices in the menu
+    selected_index is the index of the selected option (appears as a different color)
+    """
     def draw_menu(self, menu_items, selected_index=0):
         self.screen.fill(self.BLACK)
         font = pygame.font.Font(None, 36)
@@ -82,6 +110,12 @@ class Connect4Display:
             y_pos = 200 + i * 50
             self.screen.blit(text, (100, y_pos))
 
+    """
+    draw_training_info(self, episode, epsilon, win_rate) draws the training info
+    episode is the current episode
+    epsilon is the current epsilon
+    win_rate is the current win rate
+    """
     def draw_training_info(self, episode, epsilon, win_rate):
         font = pygame.font.Font(None, 24)
         episode_text = font.render(f"Episode: {episode}", True, self.WHITE)
@@ -91,6 +125,9 @@ class Connect4Display:
         self.screen.blit(epsilon_text, (600, 50))
         self.screen.blit(winrate_text, (600, 80))
 
+    """
+    draw_save_prompt() draws the prompt to save the model
+    """
     def draw_save_prompt(self):
         overlay = pygame.Surface((400, 200))
         overlay.set_alpha(200)
