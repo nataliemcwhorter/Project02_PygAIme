@@ -179,10 +179,10 @@ class GameManager:
                         mode_selection = (mode_selection + 1) % len(training_modes)
                     elif event.key == pygame.K_RETURN:
                         if mode_selection == 0:
-                            training_stats = self._train_with_display(mode='self_play', episodes=1000)
+                            training_stats = self._train_with_display(mode='self_play', episodes=10)
                             selecting_mode = False
                         elif mode_selection == 1:
-                            training_stats = self._train_with_display(mode='vs_random', episodes=1000)
+                            training_stats = self._train_with_display(mode='vs_random', episodes=10)
                             selecting_mode = False
                         elif mode_selection == 2:
                             training_stats = self._train_with_human_display()

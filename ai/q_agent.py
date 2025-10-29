@@ -94,7 +94,7 @@ class QAgent:
     def save_model(self, filepath):
         if not filepath.endswith('.keras'):
             filepath += '.keras'
-        self.q_network.save(filepath, save_format='keras')
+        self.q_network.save(filepath)
         metadata = {
             'episodes': getattr(self, 'total_episodes', 0),
             'epsilon': getattr(self, 'epsilon', 1.0),

@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0f1770b6-98df-4333-9f18-04938bb85d5f" name="Changes" comment="comments included">
+    <list default="true" id="0f1770b6-98df-4333-9f18-04938bb85d5f" name="Changes" comment="done i think">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ai/q_agent.py" beforeDir="false" afterPath="$PROJECT_DIR$/ai/q_agent.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/saved_models/weird_model" beforeDir="false" afterPath="$PROJECT_DIR$/models/saved_models/weird_model" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/saved_models/weird_model.keras" beforeDir="false" afterPath="$PROJECT_DIR$/models/saved_models/weird_model.keras" afterDir="false" />
@@ -103,7 +104,8 @@
       <workItem from="1761064687094" duration="4222000" />
       <workItem from="1761245799085" duration="2316000" />
       <workItem from="1761582876892" duration="4119000" />
-      <workItem from="1761587244571" duration="3033000" />
+      <workItem from="1761587244571" duration="3057000" />
+      <workItem from="1761743366789" duration="616000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />
@@ -129,7 +131,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761587005318</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="done i think">
+      <option name="closed" value="true" />
+      <created>1761590553238</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1761590553238</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -139,11 +149,12 @@
     <MESSAGE value="initial commit" />
     <MESSAGE value="final version?" />
     <MESSAGE value="comments included" />
-    <option name="LAST_COMMIT_MESSAGE" value="comments included" />
+    <MESSAGE value="done i think" />
+    <option name="LAST_COMMIT_MESSAGE" value="done i think" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Project02_PygAIme$file_manager.coverage" NAME="file_manager Coverage Results" MODIFIED="1760400667642" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/utils" />
-    <SUITE FILE_PATH="coverage/Project02_PygAIme$main.coverage" NAME="main Coverage Results" MODIFIED="1761587276661" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Project02_PygAIme$main.coverage" NAME="main Coverage Results" MODIFIED="1761743726341" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Project02_PygAIme$debug.coverage" NAME="debug Coverage Results" MODIFIED="1760401311080" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Project02_PygAIme$training.coverage" NAME="training Coverage Results" MODIFIED="1761065404711" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/ai" />
     <SUITE FILE_PATH="coverage/Project02_PygAIme$board.coverage" NAME="board Coverage Results" MODIFIED="1760033866260" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/game" />
