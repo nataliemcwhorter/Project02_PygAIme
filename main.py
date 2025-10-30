@@ -115,7 +115,7 @@ class GameManager:
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_y:
-                        model_name = self.model_manager.generate_model_name("weird_model")
+                        model_name = self.model_manager.generate_model_name("untrained_model")
                         metadata = {'episode': self.trainer.training_stats['total_episodes'],
                                 'win_rate': self.trainer.get_training_progress()['win_rate']}
                         self.model_manager.save_model(
@@ -179,10 +179,10 @@ class GameManager:
                         mode_selection = (mode_selection + 1) % len(training_modes)
                     elif event.key == pygame.K_RETURN:
                         if mode_selection == 0:
-                            training_stats = self._train_with_display(mode='self_play', episodes=10)
+                            training_stats = self._train_with_display(mode='self_play', episodes=1)
                             selecting_mode = False
                         elif mode_selection == 1:
-                            training_stats = self._train_with_display(mode='vs_random', episodes=10)
+                            training_stats = self._train_with_display(mode='vs_random', episodes=1)
                             selecting_mode = False
                         elif mode_selection == 2:
                             training_stats = self._train_with_human_display()
@@ -203,7 +203,7 @@ class GameManager:
                 text = font.render(mode, True, color)
                 self.screen.blit(text, (250, 150 + i * 50))
             pygame.display.flip()
-        model_name = self.model_manager.generate_model_name("weird_model")
+        model_name = self.model_manager.generate_model_name("untrained_model")
         self.model_manager.save_model(
             self.agent,
             model_name,

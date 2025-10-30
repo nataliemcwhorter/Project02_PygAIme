@@ -70,6 +70,7 @@ class TrainingManager:
             action = self.agent.act(state, valid_moves)
             prev_state = state
             row = self.board.make_move(action, current_player)
+            reward += 10
             new_state = self.board.get_board_state()
             if self.board.check_winner(current_player, row, action):
                 if current_player == 1:
@@ -77,9 +78,8 @@ class TrainingManager:
                 else:
                     reward += -100
                 self.agent.remember(prev_state, action, reward, new_state, True)
-                reward = 0
                 return current_player
-            self.agent.remember(prev_state, action, -1, new_state, False)
+            self.agent.remember(prev_state, action, reward, new_state, False)
             current_player = 3-current_player
 
     """
