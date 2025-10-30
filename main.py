@@ -9,7 +9,7 @@ from utils.file_manager import ModelManager
 
 """
 Connect4Game is a reinforcement learning project that allows you to play connect4 againt an ai
-__author__ = "27mcwhorter"
+__author__ = "nataliemcwhorter"
 __version__ = "10.27.2025"
 """
 class GameManager:
@@ -34,6 +34,7 @@ class GameManager:
         self.load_existing = False
         self.selected_model_index = 0
         self.x=0
+        self.model_name_choice = "untrained model"
 
     """
     run() runs the game loop
@@ -115,7 +116,7 @@ class GameManager:
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_y:
-                        model_name = self.model_manager.generate_model_name("untrained_model")
+                        model_name = self.model_manager.generate_model_name(self.model_name_choice)
                         metadata = {'episode': self.trainer.training_stats['total_episodes'],
                                 'win_rate': self.trainer.get_training_progress()['win_rate']}
                         self.model_manager.save_model(
@@ -203,7 +204,7 @@ class GameManager:
                 text = font.render(mode, True, color)
                 self.screen.blit(text, (250, 150 + i * 50))
             pygame.display.flip()
-        model_name = self.model_manager.generate_model_name("untrained_model")
+        model_name = self.model_manager.generate_model_name(self.model_name_choice)
         self.model_manager.save_model(
             self.agent,
             model_name,
